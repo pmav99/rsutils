@@ -3,7 +3,7 @@ import pathlib
 import pendulum
 import pytest
 
-from rsutils.landsat import to_python, NULL_VALUES, parse_mtl
+from rsutils.utils import to_python, NULL_VALUES
 
 
 @pytest.mark.parametrize(
@@ -27,38 +27,3 @@ def test_to_python(value, key, expected):
 @pytest.mark.parametrize("value", NULL_VALUES)
 def test_to_python_null_values(value):
     to_python(value) is None
-
-
-@pytest.mark.parametrize("filename", ["mtl.txt"])
-def test_parse_mtl_without_conversion(shared_datadir, filename):
-    metadata = parse_mtl(shared_datadir / filename)
-    assert isinstance(metadata, dict)
-    assert len(metadata) == 185
-    assert all("group" not in key for key in metadata.keys())
-    assert all(isinstance(value, str) for value in metadata.values())
-
-
-@pytest.mark.parametrize("filename", ["mtl.txt"])
-def test_parse_mtl_with_conversion(shared_datadir, filename):
-    metadata = parse_mtl(shared_datadir / filename, convert=True)
-    assert isinstance(metadata, dict)
-    assert len(metadata) == 185
-    # check paths conversions
-    paths = [
-        (key, value)
-        for (key, value) in metadata.items()
-        if "file_name_band" in key or "metadata_file_name" in key
-    ]
-    for (key, value) in paths:
-        assert isinstance(value, pathlib.Path), f"Problem in path conversion: {key}"
-    # check date conversion
-    date_items = [(key, value) for (key, value) in metadata.items() if "date" in key]
-    for key, value in date_items:
-        # breakpoint()
-        assert isinstance(
-            value, pendulum.DateTime
-        ), f"Problem in date conversion: {key}"
-    # check time conversion
-    time_items = [(key, value) for (key, value) in metadata.items() if "time" in key]
-    for key, value in time_items:
-        assert isinstance(value, pendulum.Time), f"Problem in time conversion: {key}"
