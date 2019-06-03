@@ -1,18 +1,18 @@
+""" Landsat Metadata """
+
 from __future__ import annotations
 
-import ast
 import dataclasses
 import logging
 import pathlib
-import typing
 
 import pendulum
 import pendulum.parsing.exceptions
 
-logger = logging.getLogger(__name__)
-
-
 from ..utils import to_python
+
+
+logger = logging.getLogger(__name__)
 
 
 def parse_mtl(mtl: pathlib.Path, convert=False) -> dict:
