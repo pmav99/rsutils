@@ -6,9 +6,6 @@ import dataclasses
 import logging
 import pathlib
 
-import pendulum
-import pendulum.parsing.exceptions
-
 from ..utils import to_python
 
 
