@@ -4,7 +4,7 @@ from pendulum import Date, Time
 
 import pytest
 
-from rsutils.landsat import parse_mtl
+from rsutils.landsat import parse_mtl, LS8_Metadata, TileCoords, LS_Band, LS_ThermalBand
 
 
 LANDSAT_4_FILES = pytest.mark.parametrize(
@@ -75,3 +75,28 @@ def test_parse_mtl_with_conversion(global_datadir, mtl_filename):
     assert isinstance(metadata["file_date"], Date)
     assert isinstance(metadata["date_acquired"], Date)
     assert isinstance(metadata["scene_center_time"], Time)
+
+
+@LANDSAT_8_FILES
+def test_landasat_8_instance_creation(global_datadir, mtl_filename):
+    ls8 = LS8_Metadata.from_mtl(global_datadir / mtl_filename)
+    assert ls8.row > 1
+    assert ls8.path > 1
+    assert isinstance(ls8.metadata, dict)
+    assert isinstance(ls8.path, int)
+    assert isinstance(ls8.row, int)
+    assert isinstance(ls8.ul, TileCoords)
+    assert isinstance(ls8.ur, TileCoords)
+    assert isinstance(ls8.ll, TileCoords)
+    assert isinstance(ls8.lr, TileCoords)
+    assert isinstance(ls8.b1, LS_Band)
+    assert isinstance(ls8.b2, LS_Band)
+    assert isinstance(ls8.b3, LS_Band)
+    assert isinstance(ls8.b4, LS_Band)
+    assert isinstance(ls8.b5, LS_Band)
+    assert isinstance(ls8.b6, LS_Band)
+    assert isinstance(ls8.b7, LS_Band)
+    assert isinstance(ls8.b8, LS_Band)
+    assert isinstance(ls8.b9, LS_Band)
+    assert isinstance(ls8.b10, LS_ThermalBand)
+    assert isinstance(ls8.b11, LS_ThermalBand)
