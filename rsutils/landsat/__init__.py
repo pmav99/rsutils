@@ -72,7 +72,7 @@ class LS_Radiance:
     add: float
 
 
-def get_landsat_radiance(metadata: dict, index: int) -> LS_radiance:
+def get_landsat_radiance(metadata: dict, index: int) -> LS_Radiance:
     radiance = LS_Radiance(
         max=metadata[f"radiance_maximum_band_{index}"],
         min=metadata[f"radiance_minimum_band_{index}"],
