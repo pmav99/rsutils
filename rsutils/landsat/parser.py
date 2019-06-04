@@ -48,104 +48,50 @@ class TileCoords:
     y: float
 
 
-def get_landsat_coords(metadata: dict, corner: str) -> TileCoords:
-    valid_corners = {"ul", "ur", "ll", "lr"}
-    if corner not in valid_corners:
-        raise ValueError(f"corner must be one of {valid_corners}, not: {corner}")
-    coords = TileCoords(
-        lat=metadata[f"corner_{corner}_lat_product"],
-        lon=metadata[f"corner_{corner}_lon_product"],
-        x=metadata[f"corner_{corner}_projection_x_product"],
-        y=metadata[f"corner_{corner}_projection_y_product"],
-    )
-    return coords
+@dataclasses.dataclass
+class LS8_BandDataBase:
+    max: float
+    min: float
 
 
 @dataclasses.dataclass
-class LS_Radiance:
-    max: float
-    min: float
+class LS8_Reflectance(LS8_BandDataBase):
     mult: float
     add: float
 
 
-def get_landsat_radiance(metadata: dict, index: int) -> LS_Radiance:
-    radiance = LS_Radiance(
-        max=metadata[f"radiance_maximum_band_{index}"],
-        min=metadata[f"radiance_minimum_band_{index}"],
-        mult=metadata[f"radiance_mult_band_{index}"],
-        add=metadata[f"radiance_add_band_{index}"],
-    )
-    return radiance
-
-
 @dataclasses.dataclass
-class LS_Reflectance:
-    max: float
-    min: float
+class LS8_Radiance(LS8_BandDataBase):
     mult: float
     add: float
 
 
-def get_landsat_reflectance(metadata: dict, index: int) -> LS_Reflectance:
-    reflectance = LS_Reflectance(
-        max=metadata[f"reflectance_maximum_band_{index}"],
-        min=metadata[f"reflectance_minimum_band_{index}"],
-        mult=metadata[f"reflectance_mult_band_{index}"],
-        add=metadata[f"reflectance_add_band_{index}"],
-    )
-    return reflectance
+@dataclasses.dataclass
+class LS8_BandBase:
+    filename: str
+    path: pathlib.Path
 
 
 @dataclasses.dataclass
-class LS_Band:
-    filename: str
-    path: pathlib.Path
-    # XXX pixel_max or maybe just max?
-    max: int
-    min: int
-    reflectance: LS_Reflectance
-    radiance: LS_Radiance
-
-
-def get_landsat_band(metadata: dict, index: int) -> LS_Band:
-    if not (1 <= index <= 9):
-        raise ValueError(f"Band index ∉ in [1, 9]: {index}")
-    band = LS_Band(
-        filename=metadata[f"file_name_band_{index}"].name,
-        path=metadata[f"file_name_band_{index}"],
-        max=metadata[f"quantize_cal_max_band_{index}"],
-        min=metadata[f"quantize_cal_min_band_{index}"],
-        reflectance=get_landsat_reflectance(metadata, index),
-        radiance=get_landsat_radiance(metadata, index),
-    )
-    return band
+class LS8_QABand(LS8_BandBase):
+    pass
 
 
 @dataclasses.dataclass
-class LS_ThermalBand:
-    filename: str
-    path: pathlib.Path
+class LS8_Band(LS8_BandBase):
     max: int
     min: int
-    radiance: LS_Radiance
+    reflectance: LS8_Reflectance
+    radiance: LS8_Radiance
+
+
+@dataclasses.dataclass
+class LS8_ThermalBand(LS8_BandBase):
+    max: int
+    min: int
+    radiance: LS8_Radiance
     k1: float
     k2: float
-
-
-def get_landsat_thermal_band(metadata: dict, index: int) -> LS_ThermalBand:
-    if not (10 <= index <= 11):
-        raise ValueError(f"Band index ∉ in [10, 11]: {index}")
-    band = LS_ThermalBand(
-        filename=metadata[f"file_name_band_{index}"].name,
-        path=metadata[f"file_name_band_{index}"],
-        max=metadata[f"quantize_cal_max_band_{index}"],
-        min=metadata[f"quantize_cal_min_band_{index}"],
-        radiance=get_landsat_radiance(metadata, index),
-        k1=metadata[f"k1_constant_band_{index}"],
-        k2=metadata[f"k2_constant_band_{index}"],
-    )
-    return band
 
 
 @dataclasses.dataclass
@@ -163,17 +109,26 @@ class LS8_Metadata:
     lr: TileCoords
     ul: TileCoords
     ur: TileCoords
-    b1: LS_Band
-    b2: LS_Band
-    b3: LS_Band
-    b4: LS_Band
-    b5: LS_Band
-    b6: LS_Band
-    b7: LS_Band
-    b8: LS_Band
-    b9: LS_Band
-    b10: LS_ThermalBand
-    b11: LS_ThermalBand
+    b1: LS8_Band
+    b2: LS8_Band
+    b3: LS8_Band
+    b4: LS8_Band
+    b5: LS8_Band
+    b6: LS8_Band
+    b7: LS8_Band
+    b8: LS8_Band
+    b9: LS8_Band
+    b10: LS8_ThermalBand
+    b11: LS8_ThermalBand
+    qa: LS8_QABand
+    # aliases
+    pan: LS8_Band
+    red: LS8_Band
+    green: LS8_Band
+    blue: LS8_Band
+    nir: LS8_Band
+    swir1: LS8_Band
+    swir2: LS8_Band
 
     def __init__(self, metadata: dict) -> None:
         self.metadata = metadata
@@ -194,9 +149,92 @@ class LS8_Metadata:
         self.b9 = get_landsat_band(metadata, 9)
         self.b10 = get_landsat_thermal_band(metadata, 10)
         self.b11 = get_landsat_thermal_band(metadata, 11)
+        self.qa = get_landsat_qa_band(metadata)
+        # aliases
+        self.blue = self.b2
+        self.green = self.b3
+        self.red = self.b4
+        self.nir = self.b5
+        self.swir1 = self.b6
+        self.swir2 = self.b7
+        self.pan = self.b8
+        self.t1 = self.b10
+        self.t2 = self.b11
 
     @classmethod
     def from_mtl(cls, mtl: pathlib.Path):
         metadata = parse_mtl(mtl, convert=True)
         instance = cls(metadata)
         return instance
+
+
+def get_landsat_coords(metadata: dict, corner: str) -> TileCoords:
+    valid_corners = {"ul", "ur", "ll", "lr"}
+    if corner not in valid_corners:
+        raise ValueError(f"corner must be one of {valid_corners}, not: {corner}")
+    coords = TileCoords(
+        lat=metadata[f"corner_{corner}_lat_product"],
+        lon=metadata[f"corner_{corner}_lon_product"],
+        x=metadata[f"corner_{corner}_projection_x_product"],
+        y=metadata[f"corner_{corner}_projection_y_product"],
+    )
+    return coords
+
+
+def get_landsat_reflectance(metadata: dict, index: int) -> LS8_Reflectance:
+    reflectance = LS8_Reflectance(
+        max=metadata[f"reflectance_maximum_band_{index}"],
+        min=metadata[f"reflectance_minimum_band_{index}"],
+        mult=metadata[f"reflectance_mult_band_{index}"],
+        add=metadata[f"reflectance_add_band_{index}"],
+    )
+    return reflectance
+
+
+def get_landsat_radiance(metadata: dict, index: int) -> LS8_Radiance:
+    radiance = LS8_Radiance(
+        max=metadata[f"radiance_maximum_band_{index}"],
+        min=metadata[f"radiance_minimum_band_{index}"],
+        mult=metadata[f"radiance_mult_band_{index}"],
+        add=metadata[f"radiance_add_band_{index}"],
+    )
+    return radiance
+
+
+def get_landsat_band(metadata: dict, index: int) -> LS8_Band:
+    if not (1 <= index <= 9):
+        raise ValueError(f"Band index ∉ in [1, 9]: {index}")
+    band = LS8_Band(
+        filename=metadata[f"file_name_band_{index}"].name,
+        path=metadata[f"file_name_band_{index}"],
+        max=metadata[f"quantize_cal_max_band_{index}"],
+        min=metadata[f"quantize_cal_min_band_{index}"],
+        reflectance=get_landsat_reflectance(metadata, index),
+        radiance=get_landsat_radiance(metadata, index),
+        # height=height,
+        # width=width,
+    )
+    return band
+
+
+def get_landsat_thermal_band(metadata: dict, index: int) -> LS8_ThermalBand:
+    if not (10 <= index <= 11):
+        raise ValueError(f"Band index ∉ in [10, 11]: {index}")
+    band = LS8_ThermalBand(
+        filename=metadata[f"file_name_band_{index}"].name,
+        path=metadata[f"file_name_band_{index}"],
+        max=metadata[f"quantize_cal_max_band_{index}"],
+        min=metadata[f"quantize_cal_min_band_{index}"],
+        radiance=get_landsat_radiance(metadata, index),
+        k1=metadata[f"k1_constant_band_{index}"],
+        k2=metadata[f"k2_constant_band_{index}"],
+    )
+    return band
+
+
+def get_landsat_qa_band(metadata: dict) -> LS8_QABand:
+    band = LS8_QABand(
+        filename=metadata["file_name_band_quality"].name,
+        path=metadata["file_name_band_quality"],
+    )
+    return band

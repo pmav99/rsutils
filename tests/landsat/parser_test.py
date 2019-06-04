@@ -8,8 +8,8 @@ from rsutils.landsat.parser import (
     parse_mtl,
     LS8_Metadata,
     TileCoords,
-    LS_Band,
-    LS_ThermalBand,
+    LS8_Band,
+    LS8_ThermalBand,
 )
 
 
@@ -95,14 +95,14 @@ def test_landasat_8_instance_creation(global_datadir, mtl_filename):
     assert isinstance(ls8.ur, TileCoords)
     assert isinstance(ls8.ll, TileCoords)
     assert isinstance(ls8.lr, TileCoords)
-    assert isinstance(ls8.b1, LS_Band)
-    assert isinstance(ls8.b2, LS_Band)
-    assert isinstance(ls8.b3, LS_Band)
-    assert isinstance(ls8.b4, LS_Band)
-    assert isinstance(ls8.b5, LS_Band)
-    assert isinstance(ls8.b6, LS_Band)
-    assert isinstance(ls8.b7, LS_Band)
-    assert isinstance(ls8.b8, LS_Band)
-    assert isinstance(ls8.b9, LS_Band)
-    assert isinstance(ls8.b10, LS_ThermalBand)
-    assert isinstance(ls8.b11, LS_ThermalBand)
+    assert isinstance(ls8.b1, LS8_Band)
+    assert isinstance(ls8.b2, LS8_Band)
+    assert isinstance(ls8.b3, LS8_Band)
+    assert isinstance(ls8.b4, LS8_Band)
+    assert isinstance(ls8.b5, LS8_Band)
+    assert isinstance(ls8.b6, LS8_Band)
+    assert isinstance(ls8.b7, LS8_Band)
+    assert isinstance(ls8.b8, LS8_Band)
+    assert isinstance(ls8.b9, LS8_Band)
+    assert isinstance(ls8.b10, LS8_ThermalBand)
+    assert isinstance(ls8.b11, LS8_ThermalBand)
