@@ -27,8 +27,12 @@ LANDSAT_7_FILES = pytest.mark.parametrize(
     ],
 )
 
-LANDSAT_7_FILES = pytest.mark.parametrize(
-    "mtl_filename", ["LC81840332014146LGN00_MTL.txt"]
+LANDSAT_8_FILES = pytest.mark.parametrize(
+    "mtl_filename",
+    [
+        "LC81840332014146LGN00_MTL.txt",
+        "LC08_L1TP_204052_20190504_20190520_01_T1_MTL.txt",
+    ],
 )
 
 LANDSAT_MTL_FILES = pytest.mark.parametrize(
