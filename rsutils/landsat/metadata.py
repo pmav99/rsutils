@@ -43,11 +43,24 @@ def parse_mtl(mtl: pathlib.Path, convert=False) -> dict:
 
 
 @dataclass
-class TileCoords:
+class LS8_Coords:
     lat: float
     lon: float
     x: float
     y: float
+
+    @classmethod
+    def from_meta(cls, metadata: dict, corner: str) -> "LS8_Coords":
+        valid_corners = {"ul", "ur", "ll", "lr"}
+        if corner not in valid_corners:
+            raise ValueError(f"corner must be one of {valid_corners}, not: {corner}")
+        coords = cls(
+            lat=metadata[f"corner_{corner}_lat_product"],
+            lon=metadata[f"corner_{corner}_lon_product"],
+            x=metadata[f"corner_{corner}_projection_x_product"],
+            y=metadata[f"corner_{corner}_projection_y_product"],
+        )
+        return coords
 
 
 @dataclass(order=False)
@@ -186,10 +199,10 @@ class LS8_Metadata:
     metadata: dict
     path: int = field(init=False)
     row: int = field(init=False)
-    ll: TileCoords = field(init=False)
-    lr: TileCoords = field(init=False)
-    ul: TileCoords = field(init=False)
-    ur: TileCoords = field(init=False)
+    ll: LS8_Coords = field(init=False)
+    lr: LS8_Coords = field(init=False)
+    ul: LS8_Coords = field(init=False)
+    ur: LS8_Coords = field(init=False)
     b1: LS8_Band = field(init=False)
     b2: LS8_Band = field(init=False)
     b3: LS8_Band = field(init=False)
@@ -220,10 +233,10 @@ class LS8_Metadata:
         self.metadata = metadata
         self.path = metadata["wrs_path"]
         self.row = metadata["wrs_row"]
-        self.ul = get_landsat_coords(metadata, "ul")
-        self.ur = get_landsat_coords(metadata, "ur")
-        self.ll = get_landsat_coords(metadata, "ll")
-        self.lr = get_landsat_coords(metadata, "lr")
+        self.ul = LS8_Coords.from_meta(metadata, "ul")
+        self.ur = LS8_Coords.from_meta(metadata, "ur")
+        self.ll = LS8_Coords.from_meta(metadata, "ll")
+        self.lr = LS8_Coords.from_meta(metadata, "lr")
         self.b1 = LS8_Band.from_meta(metadata, 1)
         self.b2 = LS8_Band.from_meta(metadata, 2)
         self.b3 = LS8_Band.from_meta(metadata, 3)
@@ -255,16 +268,3 @@ class LS8_Metadata:
         metadata = parse_mtl(mtl, convert=True)
         instance = cls(metadata)
         return instance
-
-
-def get_landsat_coords(metadata: dict, corner: str) -> TileCoords:
-    valid_corners = {"ul", "ur", "ll", "lr"}
-    if corner not in valid_corners:
-        raise ValueError(f"corner must be one of {valid_corners}, not: {corner}")
-    coords = TileCoords(
-        lat=metadata[f"corner_{corner}_lat_product"],
-        lon=metadata[f"corner_{corner}_lon_product"],
-        x=metadata[f"corner_{corner}_projection_x_product"],
-        y=metadata[f"corner_{corner}_projection_y_product"],
-    )
-    return coords

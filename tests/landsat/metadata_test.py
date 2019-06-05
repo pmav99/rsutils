@@ -6,7 +6,7 @@ import pytest
 
 from rsutils.landsat.metadata import (
     parse_mtl,
-    TileCoords,
+    LS8_Coords,
     LS8_Metadata,
     LS8_Band,
     LS8_ThermalBand,
@@ -94,10 +94,10 @@ def test_landasat_8_instance_creation(global_datadir, mtl_filename):
     assert isinstance(ls8.metadata, dict)
     assert isinstance(ls8.path, int)
     assert isinstance(ls8.row, int)
-    assert isinstance(ls8.ul, TileCoords)
-    assert isinstance(ls8.ur, TileCoords)
-    assert isinstance(ls8.ll, TileCoords)
-    assert isinstance(ls8.lr, TileCoords)
+    assert isinstance(ls8.ul, LS8_Coords)
+    assert isinstance(ls8.ur, LS8_Coords)
+    assert isinstance(ls8.ll, LS8_Coords)
+    assert isinstance(ls8.lr, LS8_Coords)
     assert isinstance(ls8.b1, LS8_Band)
     assert isinstance(ls8.b2, LS8_Band)
     assert isinstance(ls8.b3, LS8_Band)
