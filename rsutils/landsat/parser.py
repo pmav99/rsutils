@@ -69,6 +69,7 @@ class LS8_Radiance(LS8_BandDataBase):
 
 @dataclass(order=False)
 class LS8_BandBase:
+    index: int  # We assign 0 the QA band!
     filename: str
     path: pathlib.Path
     height: int
@@ -214,6 +215,7 @@ def get_landsat_band(metadata: dict, index: int) -> LS8_Band:
         height = metadata["reflective_lines"]
         width = metadata["reflective_samples"]
     band = LS8_Band(
+        index=index,
         filename=metadata[f"file_name_band_{index}"].name,
         path=metadata[f"file_name_band_{index}"],
         max=metadata[f"quantize_cal_max_band_{index}"],
@@ -230,6 +232,7 @@ def get_landsat_thermal_band(metadata: dict, index: int) -> LS8_ThermalBand:
     if not (10 <= index <= 11):
         raise ValueError(f"Band index ∉ in [10, 11]: {index}")
     band = LS8_ThermalBand(
+        index=index,
         filename=metadata[f"file_name_band_{index}"].name,
         path=metadata[f"file_name_band_{index}"],
         max=metadata[f"quantize_cal_max_band_{index}"],
@@ -245,6 +248,7 @@ def get_landsat_thermal_band(metadata: dict, index: int) -> LS8_ThermalBand:
 
 def get_landsat_qa_band(metadata: dict) -> LS8_QABand:
     band = LS8_QABand(
+        index=0,
         filename=metadata["file_name_band_quality"].name,
         path=metadata["file_name_band_quality"],
         height=metadata["reflective_lines"],
