@@ -140,6 +140,8 @@ class LS8_Metadata:
     nir: LS8_Band = field(init=False)
     swir1: LS8_Band = field(init=False)
     swir2: LS8_Band = field(init=False)
+    t1: LS8_ThermalBand = field(init=False)
+    t2: LS8_ThermalBand = field(init=False)
 
     def __init__(self, metadata: dict) -> None:
         self.metadata = metadata
