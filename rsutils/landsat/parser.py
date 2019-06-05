@@ -103,32 +103,32 @@ class LS8_Metadata:
     # station_id: str
     # processing_software_version: str
     metadata: dict
-    path: int
-    row: int
-    ll: TileCoords
-    lr: TileCoords
-    ul: TileCoords
-    ur: TileCoords
-    b1: LS8_Band
-    b2: LS8_Band
-    b3: LS8_Band
-    b4: LS8_Band
-    b5: LS8_Band
-    b6: LS8_Band
-    b7: LS8_Band
-    b8: LS8_Band
-    b9: LS8_Band
-    b10: LS8_ThermalBand
-    b11: LS8_ThermalBand
-    qa: LS8_QABand
+    path: int = field(init=False)
+    row: int = field(init=False)
+    ll: TileCoords = field(init=False)
+    lr: TileCoords = field(init=False)
+    ul: TileCoords = field(init=False)
+    ur: TileCoords = field(init=False)
+    b1: LS8_Band = field(init=False)
+    b2: LS8_Band = field(init=False)
+    b3: LS8_Band = field(init=False)
+    b4: LS8_Band = field(init=False)
+    b5: LS8_Band = field(init=False)
+    b6: LS8_Band = field(init=False)
+    b7: LS8_Band = field(init=False)
+    b8: LS8_Band = field(init=False)
+    b9: LS8_Band = field(init=False)
+    b10: LS8_ThermalBand = field(init=False)
+    b11: LS8_ThermalBand = field(init=False)
+    qa: LS8_QABand = field(init=False)
     # aliases
-    pan: LS8_Band
-    red: LS8_Band
-    green: LS8_Band
-    blue: LS8_Band
-    nir: LS8_Band
-    swir1: LS8_Band
-    swir2: LS8_Band
+    pan: LS8_Band = field(init=False)
+    red: LS8_Band = field(init=False)
+    green: LS8_Band = field(init=False)
+    blue: LS8_Band = field(init=False)
+    nir: LS8_Band = field(init=False)
+    swir1: LS8_Band = field(init=False)
+    swir2: LS8_Band = field(init=False)
 
     def __init__(self, metadata: dict) -> None:
         self.metadata = metadata
