@@ -67,6 +67,16 @@ class LS8_Radiance(LS8_BandDataBase):
     mult: float
     add: float
 
+    @classmethod
+    def from_meta(cls, metadata: dict, index: int) -> "LS8_Radiance":
+        radiance = cls(
+            max=metadata[f"radiance_maximum_band_{index}"],
+            min=metadata[f"radiance_minimum_band_{index}"],
+            mult=metadata[f"radiance_mult_band_{index}"],
+            add=metadata[f"radiance_add_band_{index}"],
+        )
+        return radiance
+
 
 @dataclass(order=False)
 class LS8_BandBase:
@@ -121,7 +131,7 @@ class LS8_Band(LS8_BandBase):
             max=metadata[f"quantize_cal_max_band_{index}"],
             min=metadata[f"quantize_cal_min_band_{index}"],
             reflectance=get_landsat_reflectance(metadata, index),
-            radiance=get_landsat_radiance(metadata, index),
+            radiance=LS8_Radiance.from_meta(metadata, index),
             height=height,
             width=width,
         )
@@ -146,7 +156,7 @@ class LS8_ThermalBand(LS8_BandBase):
             path=metadata[f"file_name_band_{index}"],
             max=metadata[f"quantize_cal_max_band_{index}"],
             min=metadata[f"quantize_cal_min_band_{index}"],
-            radiance=get_landsat_radiance(metadata, index),
+            radiance=LS8_Radiance.from_meta(metadata, index),
             k1=metadata[f"k1_constant_band_{index}"],
             k2=metadata[f"k2_constant_band_{index}"],
             height=metadata["thermal_lines"],
@@ -258,13 +268,3 @@ def get_landsat_reflectance(metadata: dict, index: int) -> LS8_Reflectance:
         add=metadata[f"reflectance_add_band_{index}"],
     )
     return reflectance
-
-
-def get_landsat_radiance(metadata: dict, index: int) -> LS8_Radiance:
-    radiance = LS8_Radiance(
-        max=metadata[f"radiance_maximum_band_{index}"],
-        min=metadata[f"radiance_minimum_band_{index}"],
-        mult=metadata[f"radiance_mult_band_{index}"],
-        add=metadata[f"radiance_add_band_{index}"],
-    )
-    return radiance
