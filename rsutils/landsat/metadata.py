@@ -113,6 +113,24 @@ class LS8_ThermalBand(LS8_BandBase):
     k1: float
     k2: float
 
+    @classmethod
+    def from_meta(cls, metadata: dict, index: int) -> "LS8_ThermalBand":
+        if not (10 <= index <= 11):
+            raise ValueError(f"Band index ∉ in [10, 11]: {index}")
+        band = cls(
+            index=index,
+            filename=metadata[f"file_name_band_{index}"].name,
+            path=metadata[f"file_name_band_{index}"],
+            max=metadata[f"quantize_cal_max_band_{index}"],
+            min=metadata[f"quantize_cal_min_band_{index}"],
+            radiance=get_landsat_radiance(metadata, index),
+            k1=metadata[f"k1_constant_band_{index}"],
+            k2=metadata[f"k2_constant_band_{index}"],
+            height=metadata["thermal_lines"],
+            width=metadata["thermal_samples"],
+        )
+        return band
+
 
 @dataclass(order=False)
 class LS8_Metadata:
@@ -172,8 +190,8 @@ class LS8_Metadata:
         self.b7 = get_landsat_band(metadata, 7)
         self.b8 = get_landsat_band(metadata, 8)
         self.b9 = get_landsat_band(metadata, 9)
-        self.b10 = get_landsat_thermal_band(metadata, 10)
-        self.b11 = get_landsat_thermal_band(metadata, 11)
+        self.b10 = LS8_ThermalBand.from_meta(metadata, 10)
+        self.b11 = LS8_ThermalBand.from_meta(metadata, 11)
         self.qa = LS8_QABand.from_meta(metadata)
         # aliases
         self.coastal = self.b1
@@ -248,23 +266,5 @@ def get_landsat_band(metadata: dict, index: int) -> LS8_Band:
         radiance=get_landsat_radiance(metadata, index),
         height=height,
         width=width,
-    )
-    return band
-
-
-def get_landsat_thermal_band(metadata: dict, index: int) -> LS8_ThermalBand:
-    if not (10 <= index <= 11):
-        raise ValueError(f"Band index ∉ in [10, 11]: {index}")
-    band = LS8_ThermalBand(
-        index=index,
-        filename=metadata[f"file_name_band_{index}"].name,
-        path=metadata[f"file_name_band_{index}"],
-        max=metadata[f"quantize_cal_max_band_{index}"],
-        min=metadata[f"quantize_cal_min_band_{index}"],
-        radiance=get_landsat_radiance(metadata, index),
-        k1=metadata[f"k1_constant_band_{index}"],
-        k2=metadata[f"k2_constant_band_{index}"],
-        height=metadata["thermal_lines"],
-        width=metadata["thermal_samples"],
     )
     return band
