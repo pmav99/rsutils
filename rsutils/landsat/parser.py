@@ -6,7 +6,6 @@ import logging
 import pathlib
 
 import numpy
-import pendulum
 import rasterio as rio
 
 from ..utils import to_python

@@ -3,8 +3,8 @@ import logging
 import pathlib
 import typing
 
-import pendulum
-import pendulum.parsing.exceptions
+import pendulum  # type: ignore
+import pendulum.parsing.exceptions  # type: ignore
 
 logger = logging.getLogger(__name__)
 
