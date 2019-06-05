@@ -4,7 +4,7 @@ from pendulum import Date, Time
 
 import pytest
 
-from rsutils.landsat.parser import (
+from rsutils.landsat.metadata import (
     parse_mtl,
     TileCoords,
     LS8_Metadata,
