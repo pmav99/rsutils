@@ -85,7 +85,16 @@ class LS8_BandBase:
 
 @dataclass(order=False)
 class LS8_QABand(LS8_BandBase):
-    pass
+    @classmethod
+    def from_meta(cls, metadata: dict) -> "LS8_QABand":
+        band = cls(
+            index=0,
+            filename=metadata["file_name_band_quality"].name,
+            path=metadata["file_name_band_quality"],
+            height=metadata["reflective_lines"],
+            width=metadata["reflective_samples"],
+        )
+        return band
 
 
 @dataclass(order=False)
@@ -165,7 +174,7 @@ class LS8_Metadata:
         self.b9 = get_landsat_band(metadata, 9)
         self.b10 = get_landsat_thermal_band(metadata, 10)
         self.b11 = get_landsat_thermal_band(metadata, 11)
-        self.qa = get_landsat_qa_band(metadata)
+        self.qa = LS8_QABand.from_meta(metadata)
         # aliases
         self.coastal = self.b1
         self.aerosol = self.b1
@@ -257,16 +266,5 @@ def get_landsat_thermal_band(metadata: dict, index: int) -> LS8_ThermalBand:
         k2=metadata[f"k2_constant_band_{index}"],
         height=metadata["thermal_lines"],
         width=metadata["thermal_samples"],
-    )
-    return band
-
-
-def get_landsat_qa_band(metadata: dict) -> LS8_QABand:
-    band = LS8_QABand(
-        index=0,
-        filename=metadata["file_name_band_quality"].name,
-        path=metadata["file_name_band_quality"],
-        height=metadata["reflective_lines"],
-        width=metadata["reflective_samples"],
     )
     return band

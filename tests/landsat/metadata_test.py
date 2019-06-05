@@ -13,7 +13,6 @@ from rsutils.landsat.metadata import (
     LS8_QABand,
     LS8_Radiance,
     LS8_Reflectance,
-    get_landsat_qa_band,
     get_landsat_band,
     get_landsat_thermal_band,
 )
@@ -112,12 +111,13 @@ def test_landasat_8_instance_creation(global_datadir, mtl_filename):
     assert isinstance(ls8.b9, LS8_Band)
     assert isinstance(ls8.b10, LS8_ThermalBand)
     assert isinstance(ls8.b11, LS8_ThermalBand)
+    assert isinstance(ls8.qa, LS8_QABand)
 
 
 @LANDSAT_8_FILES
 def test_get_landsat_qa_band(global_datadir, mtl_filename):
     metadata = parse_mtl(global_datadir / mtl_filename, convert=True)
-    qa_band = get_landsat_qa_band(metadata)
+    qa_band = LS8_QABand.from_meta(metadata)
     assert isinstance(qa_band, LS8_QABand)
     assert qa_band.index == 0
     assert qa_band.filename == qa_band.path.name
