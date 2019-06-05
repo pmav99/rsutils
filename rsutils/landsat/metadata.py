@@ -61,6 +61,16 @@ class LS8_Reflectance(LS8_BandDataBase):
     mult: float
     add: float
 
+    @classmethod
+    def from_meta(cls, metadata: dict, index: int) -> "LS8_Reflectance":
+        reflectance = cls(
+            max=metadata[f"reflectance_maximum_band_{index}"],
+            min=metadata[f"reflectance_minimum_band_{index}"],
+            mult=metadata[f"reflectance_mult_band_{index}"],
+            add=metadata[f"reflectance_add_band_{index}"],
+        )
+        return reflectance
+
 
 @dataclass(order=False)
 class LS8_Radiance(LS8_BandDataBase):
@@ -130,7 +140,7 @@ class LS8_Band(LS8_BandBase):
             path=metadata[f"file_name_band_{index}"],
             max=metadata[f"quantize_cal_max_band_{index}"],
             min=metadata[f"quantize_cal_min_band_{index}"],
-            reflectance=get_landsat_reflectance(metadata, index),
+            reflectance=LS8_Reflectance.from_meta(metadata, index),
             radiance=LS8_Radiance.from_meta(metadata, index),
             height=height,
             width=width,
@@ -258,13 +268,3 @@ def get_landsat_coords(metadata: dict, corner: str) -> TileCoords:
         y=metadata[f"corner_{corner}_projection_y_product"],
     )
     return coords
-
-
-def get_landsat_reflectance(metadata: dict, index: int) -> LS8_Reflectance:
-    reflectance = LS8_Reflectance(
-        max=metadata[f"reflectance_maximum_band_{index}"],
-        min=metadata[f"reflectance_minimum_band_{index}"],
-        mult=metadata[f"reflectance_mult_band_{index}"],
-        add=metadata[f"reflectance_add_band_{index}"],
-    )
-    return reflectance
