@@ -13,7 +13,7 @@ Python 3.6+
 
 #### Higher level API
 
-```
+``` python
 import pathlib
 import rsutils.landsat as landsat
 
@@ -106,7 +106,7 @@ print()
 The `parse_mtl` function will return a dictionary. If `convert=True` then the values
 will be casted to Python objects (integers, floats, booleans, `pathlib.Path`, None, etc)
 
-```
+``` python
 import pathlib
 import rsutils.landsat as landsat
 
