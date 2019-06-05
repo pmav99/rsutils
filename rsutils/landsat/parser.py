@@ -165,7 +165,7 @@ class LS8_Metadata:
         self.t2 = self.b11
 
     @classmethod
-    def from_mtl(cls, mtl: pathlib.Path):
+    def from_path(cls, mtl: pathlib.Path):
         metadata = parse_mtl(mtl, convert=True)
         instance = cls(metadata)
         return instance

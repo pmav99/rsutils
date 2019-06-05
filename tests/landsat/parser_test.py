@@ -85,7 +85,7 @@ def test_parse_mtl_with_conversion(global_datadir, mtl_filename):
 
 @LANDSAT_8_FILES
 def test_landasat_8_instance_creation(global_datadir, mtl_filename):
-    ls8 = LS8_Metadata.from_mtl(global_datadir / mtl_filename)
+    ls8 = LS8_Metadata.from_path(global_datadir / mtl_filename)
     assert ls8.row > 1
     assert ls8.path > 1
     assert isinstance(ls8.metadata, dict)
