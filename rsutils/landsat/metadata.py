@@ -133,15 +133,18 @@ class LS8_Metadata:
     b11: LS8_ThermalBand = field(init=False)
     qa: LS8_QABand = field(init=False)
     # aliases
-    pan: LS8_Band = field(init=False)
-    red: LS8_Band = field(init=False)
-    green: LS8_Band = field(init=False)
+    coastal: LS8_Band = field(init=False)
+    aerosol: LS8_Band = field(init=False)
     blue: LS8_Band = field(init=False)
+    green: LS8_Band = field(init=False)
+    red: LS8_Band = field(init=False)
     nir: LS8_Band = field(init=False)
     swir1: LS8_Band = field(init=False)
     swir2: LS8_Band = field(init=False)
-    t1: LS8_ThermalBand = field(init=False)
-    t2: LS8_ThermalBand = field(init=False)
+    pan: LS8_Band = field(init=False)
+    cirrus: LS8_Band = field(init=False)
+    tir1: LS8_ThermalBand = field(init=False)
+    tir2: LS8_ThermalBand = field(init=False)
 
     def __init__(self, metadata: dict) -> None:
         self.metadata = metadata
@@ -164,6 +167,8 @@ class LS8_Metadata:
         self.b11 = get_landsat_thermal_band(metadata, 11)
         self.qa = get_landsat_qa_band(metadata)
         # aliases
+        self.coastal = self.b1
+        self.aerosol = self.b1
         self.blue = self.b2
         self.green = self.b3
         self.red = self.b4
@@ -171,8 +176,9 @@ class LS8_Metadata:
         self.swir1 = self.b6
         self.swir2 = self.b7
         self.pan = self.b8
-        self.t1 = self.b10
-        self.t2 = self.b11
+        self.cirrus = self.b9
+        self.tir1 = self.b10
+        self.tir2 = self.b11
 
     @classmethod
     def from_path(cls, mtl: pathlib.Path):
