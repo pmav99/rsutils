@@ -1,6 +1,7 @@
 """ Landsat Metadata """
 
-import dataclasses
+
+from dataclasses import dataclass, field
 import logging
 import pathlib
 
@@ -40,7 +41,7 @@ def parse_mtl(mtl: pathlib.Path, convert=False) -> dict:
     return metadata
 
 
-@dataclasses.dataclass
+@dataclass
 class TileCoords:
     lat: float
     lon: float
@@ -48,36 +49,36 @@ class TileCoords:
     y: float
 
 
-@dataclasses.dataclass
+@dataclass(order=False)
 class LS8_BandDataBase:
     max: float
     min: float
 
 
-@dataclasses.dataclass
+@dataclass(order=False)
 class LS8_Reflectance(LS8_BandDataBase):
     mult: float
     add: float
 
 
-@dataclasses.dataclass
+@dataclass(order=False)
 class LS8_Radiance(LS8_BandDataBase):
     mult: float
     add: float
 
 
-@dataclasses.dataclass
+@dataclass(order=False)
 class LS8_BandBase:
     filename: str
     path: pathlib.Path
 
 
-@dataclasses.dataclass
+@dataclass(order=False)
 class LS8_QABand(LS8_BandBase):
     pass
 
 
-@dataclasses.dataclass
+@dataclass(order=False)
 class LS8_Band(LS8_BandBase):
     max: int
     min: int
@@ -85,7 +86,7 @@ class LS8_Band(LS8_BandBase):
     radiance: LS8_Radiance
 
 
-@dataclasses.dataclass
+@dataclass(order=False)
 class LS8_ThermalBand(LS8_BandBase):
     max: int
     min: int
@@ -94,7 +95,7 @@ class LS8_ThermalBand(LS8_BandBase):
     k2: float
 
 
-@dataclasses.dataclass
+@dataclass(order=False)
 class LS8_Metadata:
     # origin: str
     # request_id: str
