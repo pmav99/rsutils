@@ -67,13 +67,12 @@ class LS8_Coords:
 class LS8_BandDataBase:
     max: float
     min: float
+    mult: float
+    add: float
 
 
 @dataclass(order=False)
 class LS8_Reflectance(LS8_BandDataBase):
-    mult: float
-    add: float
-
     @classmethod
     def from_meta(cls, metadata: dict, index: int) -> "LS8_Reflectance":
         reflectance = cls(
@@ -87,9 +86,6 @@ class LS8_Reflectance(LS8_BandDataBase):
 
 @dataclass(order=False)
 class LS8_Radiance(LS8_BandDataBase):
-    mult: float
-    add: float
-
     @classmethod
     def from_meta(cls, metadata: dict, index: int) -> "LS8_Radiance":
         radiance = cls(
