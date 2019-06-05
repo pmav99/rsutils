@@ -91,7 +91,7 @@ def to_python(
     value: str,
     key: str = "",
     root_dir: typing.Union[pathlib.Path, None] = None,
-    null_values: typing.Set[str] = NULL_VALUES,
+    null_values: typing.FrozenSet[str] = NULL_VALUES,
 ) -> typing.Union[
     str,
     bytes,
