@@ -8,6 +8,7 @@ authors = ["Panos Mavrogiorgos <pmav99@gmail.com>"]
 python = "^3.6"
 pendulum = "^2.0"
 dataclasses = { version = "^0.6.0", python = "^3.6.0" }
+rasterio = "^1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.0"
@@ -16,6 +17,10 @@ pre-commit = "^1.15"
 bump2version = "^0.5.10"
 pytest-datadir = "^1.3"
 prospector = "^1.1"
+ipython = "^7.5"
+mypy = "^0.701.0"
+numpy-stubs = {git = "git@github.com:numpy/numpy-stubs.git"}
+typeshed = "^0.0.1"
 
 [build-system]
 requires = ["poetry>=0.12"]

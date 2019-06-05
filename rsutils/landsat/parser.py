@@ -5,7 +5,9 @@ from dataclasses import dataclass, field
 import logging
 import pathlib
 
+import numpy
 import pendulum
+import rasterio as rio
 
 from ..utils import to_python
 
@@ -74,6 +76,12 @@ class LS8_BandBase:
     path: pathlib.Path
     height: int
     width: int
+
+    def to_numpy(self) -> numpy.ndarray:
+        """ Open the TIFF and return a `numpy.ndarray` """
+        with rio.open(self.path) as src:
+            data = src.read(1)
+        return data
 
 
 @dataclass(order=False)
