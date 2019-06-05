@@ -104,6 +104,29 @@ class LS8_Band(LS8_BandBase):
     reflectance: LS8_Reflectance
     radiance: LS8_Radiance
 
+    @classmethod
+    def from_meta(cls, metadata: dict, index: int) -> "LS8_Band":
+        if not (1 <= index <= 9):
+            raise ValueError(f"Band index ∉ in [1, 9]: {index}")
+        if index == 8:
+            height = metadata["panchromatic_lines"]
+            width = metadata["panchromatic_samples"]
+        else:
+            height = metadata["reflective_lines"]
+            width = metadata["reflective_samples"]
+        band = cls(
+            index=index,
+            filename=metadata[f"file_name_band_{index}"].name,
+            path=metadata[f"file_name_band_{index}"],
+            max=metadata[f"quantize_cal_max_band_{index}"],
+            min=metadata[f"quantize_cal_min_band_{index}"],
+            reflectance=get_landsat_reflectance(metadata, index),
+            radiance=get_landsat_radiance(metadata, index),
+            height=height,
+            width=width,
+        )
+        return band
+
 
 @dataclass(order=False)
 class LS8_ThermalBand(LS8_BandBase):
@@ -181,15 +204,15 @@ class LS8_Metadata:
         self.ur = get_landsat_coords(metadata, "ur")
         self.ll = get_landsat_coords(metadata, "ll")
         self.lr = get_landsat_coords(metadata, "lr")
-        self.b1 = get_landsat_band(metadata, 1)
-        self.b2 = get_landsat_band(metadata, 2)
-        self.b3 = get_landsat_band(metadata, 3)
-        self.b4 = get_landsat_band(metadata, 4)
-        self.b5 = get_landsat_band(metadata, 5)
-        self.b6 = get_landsat_band(metadata, 6)
-        self.b7 = get_landsat_band(metadata, 7)
-        self.b8 = get_landsat_band(metadata, 8)
-        self.b9 = get_landsat_band(metadata, 9)
+        self.b1 = LS8_Band.from_meta(metadata, 1)
+        self.b2 = LS8_Band.from_meta(metadata, 2)
+        self.b3 = LS8_Band.from_meta(metadata, 3)
+        self.b4 = LS8_Band.from_meta(metadata, 4)
+        self.b5 = LS8_Band.from_meta(metadata, 5)
+        self.b6 = LS8_Band.from_meta(metadata, 6)
+        self.b7 = LS8_Band.from_meta(metadata, 7)
+        self.b8 = LS8_Band.from_meta(metadata, 8)
+        self.b9 = LS8_Band.from_meta(metadata, 9)
         self.b10 = LS8_ThermalBand.from_meta(metadata, 10)
         self.b11 = LS8_ThermalBand.from_meta(metadata, 11)
         self.qa = LS8_QABand.from_meta(metadata)
@@ -245,26 +268,3 @@ def get_landsat_radiance(metadata: dict, index: int) -> LS8_Radiance:
         add=metadata[f"radiance_add_band_{index}"],
     )
     return radiance
-
-
-def get_landsat_band(metadata: dict, index: int) -> LS8_Band:
-    if not (1 <= index <= 9):
-        raise ValueError(f"Band index ∉ in [1, 9]: {index}")
-    if index == 8:
-        height = metadata["panchromatic_lines"]
-        width = metadata["panchromatic_samples"]
-    else:
-        height = metadata["reflective_lines"]
-        width = metadata["reflective_samples"]
-    band = LS8_Band(
-        index=index,
-        filename=metadata[f"file_name_band_{index}"].name,
-        path=metadata[f"file_name_band_{index}"],
-        max=metadata[f"quantize_cal_max_band_{index}"],
-        min=metadata[f"quantize_cal_min_band_{index}"],
-        reflectance=get_landsat_reflectance(metadata, index),
-        radiance=get_landsat_radiance(metadata, index),
-        height=height,
-        width=width,
-    )
-    return band
