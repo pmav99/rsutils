@@ -2,15 +2,32 @@ import importlib
 import pathlib
 import shutil
 
-
 import pytest
 
+from rsutils.landsat import parse_mtl, LS8_Metadata
+from . import DATA_DIR
 
-@pytest.fixture
-def global_datadir(tmpdir):
-    package_name = __name__.split(".")[0]
-    package_path = pathlib.Path(importlib.import_module(package_name).__file__).parent
-    global_shared_path = package_path / "data"
-    temp_path = pathlib.Path(str(tmpdir.join("data")))
-    shutil.copytree(global_shared_path, temp_path)
-    return temp_path
+
+@pytest.fixture(scope="function")
+def ls8_scene(tmp_path):
+    """Return a temporary directory containing a copy of a downsampled LS8 scene."""
+    src_dir = DATA_DIR / "ls8"
+    for filename in src_dir.glob("*"):
+        shutil.copy(filename, tmp_path)
+    return tmp_path
+
+
+@pytest.fixture(scope="function")
+def ls8_scene_mtl(ls8_scene):
+    """Return the path to the MTL of a temporary directory containing a copy of a downsampled LS8 scene."""
+    print(ls8_scene)
+    print(list(ls8_scene.glob("*MTL.txt")))
+    mtl = next(ls8_scene.glob("*MTL.txt"))
+    return mtl
+
+
+@pytest.fixture(scope="function")
+def ls8_scene_meta(ls8_scene_mtl):
+    """ Return an instance of LS8_Metadata with the downsampled data """
+    metadata = LS8_Metadata.from_path(ls8_scene_mtl, convert=True)
+    return metadata

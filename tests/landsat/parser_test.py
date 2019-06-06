@@ -10,8 +10,8 @@ from .. import LANDSAT_MTL_FILES
 
 
 @LANDSAT_MTL_FILES
-def test_parse_mtl_no_conversion(global_datadir, mtl_filename):
-    metadata = parse_mtl(global_datadir / mtl_filename, convert=False)
+def test_parse_mtl_no_conversion(mtl_filename):
+    metadata = parse_mtl(mtl_filename, convert=False)
     assert isinstance(metadata, dict)
     assert len(metadata) >= 100
     assert all("group" not in key for key in metadata.keys())
@@ -19,8 +19,8 @@ def test_parse_mtl_no_conversion(global_datadir, mtl_filename):
 
 
 @LANDSAT_MTL_FILES
-def test_parse_mtl_with_conversion(global_datadir, mtl_filename):
-    metadata = parse_mtl(global_datadir / mtl_filename, convert=True)
+def test_parse_mtl_with_conversion(mtl_filename):
+    metadata = parse_mtl(mtl_filename, convert=True)
     assert isinstance(metadata, dict)
     assert len(metadata) >= 100
     assert all("group" not in key for key in metadata.keys())
