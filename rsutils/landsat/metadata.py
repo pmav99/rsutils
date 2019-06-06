@@ -106,7 +106,9 @@ class LS8_BandBase:
 @dataclass(order=False)
 class LS8_QABand(LS8_BandBase):
     @classmethod
-    def from_meta(cls, metadata: dict) -> "LS8_QABand":
+    def from_meta(
+        cls, metadata: dict
+    ) -> "LS8_QABand":  # pylint: disable=arguments-differ
         band = cls(
             index=0,
             filename=metadata["file_name_band_quality"].name,
