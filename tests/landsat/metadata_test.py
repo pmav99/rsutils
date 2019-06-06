@@ -40,7 +40,7 @@ def test_landasat_8_instance_creation(global_datadir, mtl_filename):
 
 
 @LANDSAT_8_FILES
-def test_get_landsat_qa_band(global_datadir, mtl_filename):
+def test_ls8_qa_band(global_datadir, mtl_filename):
     metadata = parse_mtl(global_datadir / mtl_filename, convert=True)
     qa_band = LS8_QABand.from_meta(metadata)
     assert isinstance(qa_band, LS8_QABand)
@@ -53,7 +53,7 @@ def test_get_landsat_qa_band(global_datadir, mtl_filename):
 
 @pytest.mark.parametrize("band_index", (10, 11))
 @LANDSAT_8_FILES
-def test_get_landsat_thermal_band(global_datadir, mtl_filename, band_index):
+def test_ls8_thermal_band(global_datadir, mtl_filename, band_index):
     metadata = parse_mtl(global_datadir / mtl_filename, convert=True)
     thermal_band = LS8_ThermalBand.from_meta(metadata, band_index)
     assert isinstance(thermal_band, LS8_ThermalBand)
@@ -67,7 +67,7 @@ def test_get_landsat_thermal_band(global_datadir, mtl_filename, band_index):
 
 @pytest.mark.parametrize("band_index", [1, 2, 3, 4, 5, 6, 7, 9])
 @LANDSAT_8_FILES
-def test_get_landsat_band(global_datadir, mtl_filename, band_index):
+def test_ls8_band(global_datadir, mtl_filename, band_index):
     metadata = parse_mtl(global_datadir / mtl_filename, convert=True)
     thermal_band = LS8_Band.from_meta(metadata, band_index)
     assert isinstance(thermal_band, LS8_Band)
@@ -81,7 +81,7 @@ def test_get_landsat_band(global_datadir, mtl_filename, band_index):
 
 
 @LANDSAT_8_FILES
-def test_get_landsat_panchromatic_band(global_datadir, mtl_filename):
+def test_ls8_panchromatic_band(global_datadir, mtl_filename):
     metadata = parse_mtl(global_datadir / mtl_filename, convert=True)
     thermal_band = LS8_Band.from_meta(metadata, 8)
     assert isinstance(thermal_band, LS8_Band)
