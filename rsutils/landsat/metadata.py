@@ -193,24 +193,24 @@ class LS8_Metadata:
     # station_id: str
     # processing_software_version: str
     metadata: dict
-    path: int = field(init=False)
-    row: int = field(init=False)
-    ll: LS8_Coords = field(init=False)
-    lr: LS8_Coords = field(init=False)
-    ul: LS8_Coords = field(init=False)
-    ur: LS8_Coords = field(init=False)
-    b1: LS8_Band = field(init=False)
-    b2: LS8_Band = field(init=False)
-    b3: LS8_Band = field(init=False)
-    b4: LS8_Band = field(init=False)
-    b5: LS8_Band = field(init=False)
-    b6: LS8_Band = field(init=False)
-    b7: LS8_Band = field(init=False)
-    b8: LS8_Band = field(init=False)
-    b9: LS8_Band = field(init=False)
-    b10: LS8_ThermalBand = field(init=False)
-    b11: LS8_ThermalBand = field(init=False)
-    qa: LS8_QABand = field(init=False)
+    path: int
+    row: int
+    ll: LS8_Coords
+    lr: LS8_Coords
+    ul: LS8_Coords
+    ur: LS8_Coords
+    b1: LS8_Band
+    b2: LS8_Band
+    b3: LS8_Band
+    b4: LS8_Band
+    b5: LS8_Band
+    b6: LS8_Band
+    b7: LS8_Band
+    b8: LS8_Band
+    b9: LS8_Band
+    b10: LS8_ThermalBand
+    b11: LS8_ThermalBand
+    qa: LS8_QABand
     # aliases
     coastal: LS8_Band = field(init=False)
     aerosol: LS8_Band = field(init=False)
@@ -225,26 +225,7 @@ class LS8_Metadata:
     tir1: LS8_ThermalBand = field(init=False)
     tir2: LS8_ThermalBand = field(init=False)
 
-    def __init__(self, metadata: dict) -> None:
-        self.metadata = metadata
-        self.path = metadata["wrs_path"]
-        self.row = metadata["wrs_row"]
-        self.ul = LS8_Coords.from_meta(metadata, "ul")
-        self.ur = LS8_Coords.from_meta(metadata, "ur")
-        self.ll = LS8_Coords.from_meta(metadata, "ll")
-        self.lr = LS8_Coords.from_meta(metadata, "lr")
-        self.b1 = LS8_Band.from_meta(metadata, 1)
-        self.b2 = LS8_Band.from_meta(metadata, 2)
-        self.b3 = LS8_Band.from_meta(metadata, 3)
-        self.b4 = LS8_Band.from_meta(metadata, 4)
-        self.b5 = LS8_Band.from_meta(metadata, 5)
-        self.b6 = LS8_Band.from_meta(metadata, 6)
-        self.b7 = LS8_Band.from_meta(metadata, 7)
-        self.b8 = LS8_Band.from_meta(metadata, 8)
-        self.b9 = LS8_Band.from_meta(metadata, 9)
-        self.b10 = LS8_ThermalBand.from_meta(metadata, 10)
-        self.b11 = LS8_ThermalBand.from_meta(metadata, 11)
-        self.qa = LS8_QABand.from_meta(metadata)
+    def __post_init__(self) -> None:
         # aliases
         self.coastal = self.b1
         self.aerosol = self.b1
@@ -262,5 +243,25 @@ class LS8_Metadata:
     @classmethod
     def from_path(cls, mtl: pathlib.Path):
         metadata = parse_mtl(mtl, convert=True)
-        instance = cls(metadata)
+        instance = cls(
+            metadata=metadata,
+            path=metadata["wrs_path"],
+            row=metadata["wrs_row"],
+            ul=LS8_Coords.from_meta(metadata, "ul"),
+            ur=LS8_Coords.from_meta(metadata, "ur"),
+            ll=LS8_Coords.from_meta(metadata, "ll"),
+            lr=LS8_Coords.from_meta(metadata, "lr"),
+            b1=LS8_Band.from_meta(metadata, 1),
+            b2=LS8_Band.from_meta(metadata, 2),
+            b3=LS8_Band.from_meta(metadata, 3),
+            b4=LS8_Band.from_meta(metadata, 4),
+            b5=LS8_Band.from_meta(metadata, 5),
+            b6=LS8_Band.from_meta(metadata, 6),
+            b7=LS8_Band.from_meta(metadata, 7),
+            b8=LS8_Band.from_meta(metadata, 8),
+            b9=LS8_Band.from_meta(metadata, 9),
+            b10=LS8_ThermalBand.from_meta(metadata, 10),
+            b11=LS8_ThermalBand.from_meta(metadata, 11),
+            qa=LS8_QABand.from_meta(metadata),
+        )
         return instance
