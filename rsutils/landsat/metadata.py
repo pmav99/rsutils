@@ -79,6 +79,18 @@ class LS8_BandBase:
     height: int
     width: int
 
+    @classmethod
+    def from_meta(cls, metadata: dict, index: int) -> "LS8_BandBase":
+        """ Return a LS8_BandBase instance """
+        band = cls(
+            index=index,
+            filename=metadata["file_name_band_quality"].name,
+            path=metadata["file_name_band_quality"],
+            height=metadata["reflective_lines"],
+            width=metadata["reflective_samples"],
+        )
+        return band
+
     def to_numpy(self) -> numpy.ndarray:
         """ Open the TIFF and return a `numpy.ndarray` """
         with rasterio.open(self.path) as src:

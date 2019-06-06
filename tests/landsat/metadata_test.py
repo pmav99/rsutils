@@ -1,4 +1,5 @@
 import pytest
+import rasterio
 
 from rsutils.landsat.parser import parse_mtl
 from rsutils.landsat.metadata import (
@@ -106,3 +107,11 @@ def test_ls8_panchromatic_band(mtl_filename):
     assert thermal_band.width == metadata["panchromatic_samples"]
     assert isinstance(thermal_band.radiance, LS8_Radiance)
     assert isinstance(thermal_band.reflectance, LS8_Reflectance)
+
+
+class Test_LS8_BandBase:
+    def test_get_src(self, ls8_scene_mtl):
+        metadata = parse_mtl(ls8_scene_mtl, convert=True)
+        band = LS8_BandBase.from_meta(metadata, 1)
+        src = band.get_src()
+        assert isinstance(src, rasterio.io.DatasetReader)
