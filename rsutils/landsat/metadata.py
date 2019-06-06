@@ -128,14 +128,8 @@ class LS8_Band(LS8_BandBase):
 
     @classmethod
     def from_meta(cls, metadata: dict, index: int) -> "LS8_Band":
-        if not (1 <= index <= 9):
-            raise ValueError(f"Band index ∉ in [1, 9]: {index}")
-        if index == 8:
-            height = metadata["panchromatic_lines"]
-            width = metadata["panchromatic_samples"]
-        else:
-            height = metadata["reflective_lines"]
-            width = metadata["reflective_samples"]
+        if not index in {1, 2, 3, 4, 5, 6, 7, 9}:
+            raise ValueError(f"Band index ∉ in [1, ..., 7, 9]: {index}")
         band = cls(
             index=index,
             filename=metadata[f"file_name_band_{index}"].name,
@@ -144,8 +138,29 @@ class LS8_Band(LS8_BandBase):
             min=metadata[f"quantize_cal_min_band_{index}"],
             reflectance=LS8_Reflectance.from_meta(metadata, index),
             radiance=LS8_Radiance.from_meta(metadata, index),
-            height=height,
-            width=width,
+            height=metadata["reflective_lines"],
+            width=metadata["reflective_samples"],
+        )
+        return band
+
+
+@dataclass(order=False)
+class LS8_PanchromaticBand(LS8_Band):
+    @classmethod
+    def from_meta(
+        cls, metadata: dict
+    ) -> "LS8_PanchromaticBandBand":  # pylint: disable=arguments-differ
+        index = 8
+        band = cls(
+            index=index,
+            filename=metadata[f"file_name_band_{index}"].name,
+            path=metadata[f"file_name_band_{index}"],
+            max=metadata[f"quantize_cal_max_band_{index}"],
+            min=metadata[f"quantize_cal_min_band_{index}"],
+            reflectance=LS8_Reflectance.from_meta(metadata, index),
+            radiance=LS8_Radiance.from_meta(metadata, index),
+            height=metadata["panchromatic_lines"],
+            width=metadata["panchromatic_samples"],
         )
         return band
 
@@ -199,7 +214,7 @@ class LS8_Metadata:
     b5: LS8_Band
     b6: LS8_Band
     b7: LS8_Band
-    b8: LS8_Band
+    b8: LS8_PanchromaticBand
     b9: LS8_Band
     b10: LS8_ThermalBand
     b11: LS8_ThermalBand
@@ -251,7 +266,7 @@ class LS8_Metadata:
             b5=LS8_Band.from_meta(metadata, 5),
             b6=LS8_Band.from_meta(metadata, 6),
             b7=LS8_Band.from_meta(metadata, 7),
-            b8=LS8_Band.from_meta(metadata, 8),
+            b8=LS8_PanchromaticBand.from_meta(metadata),
             b9=LS8_Band.from_meta(metadata, 9),
             b10=LS8_ThermalBand.from_meta(metadata, 10),
             b11=LS8_ThermalBand.from_meta(metadata, 11),

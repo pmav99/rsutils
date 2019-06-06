@@ -7,6 +7,7 @@ from rsutils.landsat.metadata import (
     LS8_Metadata,
     LS8_BandBase,
     LS8_Band,
+    LS8_PanchromaticBand,
     LS8_ThermalBand,
     LS8_QABand,
     LS8_Radiance,
@@ -99,7 +100,7 @@ def test_ls8_band(mtl_filename, band_index):
 @LANDSAT_8_FILES
 def test_ls8_panchromatic_band(mtl_filename):
     metadata = parse_mtl(mtl_filename, convert=True)
-    thermal_band = LS8_Band.from_meta(metadata, 8)
+    thermal_band = LS8_PanchromaticBand.from_meta(metadata)
     assert isinstance(thermal_band, LS8_Band)
     assert thermal_band.index == 8
     assert thermal_band.filename == thermal_band.path.name
