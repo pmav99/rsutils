@@ -93,11 +93,11 @@ class LS8_BandBase:
 
     def to_numpy(self) -> numpy.ndarray:
         """ Open the TIFF and return a `numpy.ndarray` """
-        with rasterio.open(self.path) as src:
-            data = src.read(1)
-        return data
+        with self.to_dataset() as src:
+            array = src.read(1)
+        return array
 
-    def get_src(self, *args, **kwargs):
+    def to_dataset(self, *args, **kwargs):
         rio_open = functools.partial(rasterio.open, self.path)
         src = rio_open(*args, **kwargs)
         return src

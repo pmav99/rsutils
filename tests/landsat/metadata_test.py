@@ -110,8 +110,8 @@ def test_ls8_panchromatic_band(mtl_filename):
 
 
 class Test_LS8_BandBase:
-    def test_get_src(self, ls8_scene_mtl):
+    def test_to_dataset(self, ls8_scene_mtl):
         metadata = parse_mtl(ls8_scene_mtl, convert=True)
         band = LS8_BandBase.from_meta(metadata, 1)
-        src = band.get_src()
+        src = band.to_dataset()
         assert isinstance(src, rasterio.io.DatasetReader)
