@@ -9,9 +9,13 @@ import pendulum.parsing.exceptions  # type: ignore
 logger = logging.getLogger(__name__)
 
 NULL_VALUES = frozenset(("none", "None", "NONE", "null", "Null", "NULL"))
+TRUTH_VALUES = frozenset(("y", "yes", "Y", "YES", "Yes"))
+FALSE_VALUES = frozenset(("n", "no", "N", "NO", "No"))
 
 __all__ = [
     "NULL_VALUES",
+    "TRUTH_VALUES",
+    "FALSE_VALUES",
     "_TO_PYTHON_DISPATCHER",
     "to_datetime",
     "to_time",
@@ -19,6 +23,25 @@ __all__ = [
     "ast_parser",
     "to_python",
 ]
+
+
+def to_boolean(
+    text: str,
+    *,
+    truth_values=TRUTH_VALUES,
+    false_values=FALSE_VALUES,
+    **kwargs  # pylint: disable=unused-argument
+) -> bool:
+    """
+    Convert `text` to `True/False` ,or if the conversion fails, return the object unchanged.
+    """
+    if text in TRUTH_VALUES:
+        result = True
+    elif text in FALSE_VALUES:
+        result = False
+    else:
+        result = text
+    return result
 
 
 def to_datetime(

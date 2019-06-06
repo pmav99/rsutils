@@ -3,7 +3,29 @@ import pathlib
 import pendulum
 import pytest
 
-from rsutils.utils import to_python, NULL_VALUES
+from rsutils.utils import to_python, to_boolean, NULL_VALUES
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        # fmt: off
+        ("y", True),
+        ("yes", True),
+        ("Y", True),
+        ("YES", True),
+        ("Yes", True),
+        ("n", False),
+        ("no", False),
+        ("N", False),
+        ("NO", False),
+        pytest.param("normal_string", "normal_string", id="Normal strings remain unchanged"),
+        pytest.param("123", "123", id="Numeric strings remain unchanged"),
+        # fmt: on
+    ],
+)
+def test_to_boolean(value, expected):
+    assert to_boolean(value) == expected
 
 
 @pytest.mark.parametrize(
