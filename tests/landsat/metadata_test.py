@@ -40,6 +40,23 @@ def test_landasat_8_instance_creation(global_datadir, mtl_filename):
 
 
 @LANDSAT_8_FILES
+def test_ls8_metadata_aliases(global_datadir, mtl_filename):
+    ls8 = LS8_Metadata.from_path(global_datadir / mtl_filename)
+    assert ls8.aerosol == ls8.b1
+    assert ls8.coastal == ls8.b1
+    assert ls8.blue == ls8.b2
+    assert ls8.green == ls8.b3
+    assert ls8.red == ls8.b4
+    assert ls8.nir == ls8.b5
+    assert ls8.swir1 == ls8.b6
+    assert ls8.swir2 == ls8.b7
+    assert ls8.pan == ls8.b8
+    assert ls8.cirrus == ls8.b9
+    assert ls8.tir1 == ls8.b10
+    assert ls8.tir2 == ls8.b11
+
+
+@LANDSAT_8_FILES
 def test_ls8_qa_band(global_datadir, mtl_filename):
     metadata = parse_mtl(global_datadir / mtl_filename, convert=True)
     qa_band = LS8_QABand.from_meta(metadata)
