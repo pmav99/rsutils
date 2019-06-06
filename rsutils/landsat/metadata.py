@@ -1,45 +1,19 @@
 """ Landsat Metadata """
 
-
 from dataclasses import dataclass, field
+import functools
+import itertools
 import logging
 import pathlib
+import typing
 
 import numpy
-import rasterio as rio
+import rasterio
 
-from ..utils import to_python
+from .parser import parse_mtl
 
 
 logger = logging.getLogger(__name__)
-
-
-def parse_mtl(mtl: pathlib.Path, convert=False) -> dict:
-    """
-    Parse the Metadata file and return a dictionary with the key-value pairs.
-    Note: The keys are converted to lowercase.
-    """
-    # populate the dictionary with the key-value pairs.
-    # skip "GROUP" lines and the last line (i.e. "END")
-    metadata = {}
-    if convert:
-        root_dir = mtl.parent.resolve()
-    with mtl.open() as fd:
-        for i, line in enumerate(fd.readlines()[:-1], start=1):
-            line = line.strip()
-            if line and "GROUP = " not in line:
-                try:
-                    key, value = line.split(" = ")
-                    key = key.lower()
-                    value = value.replace('"', "")
-                    if convert:
-                        value = to_python(value, key, root_dir)
-                except Exception:
-                    logger.error("Problem in line %d: %s", i, line)
-                    raise
-                else:
-                    metadata[key] = value
-    return metadata
 
 
 @dataclass
@@ -107,9 +81,14 @@ class LS8_BandBase:
 
     def to_numpy(self) -> numpy.ndarray:
         """ Open the TIFF and return a `numpy.ndarray` """
-        with rio.open(self.path) as src:
+        with rasterio.open(self.path) as src:
             data = src.read(1)
         return data
+
+    def get_src(self, *args, **kwargs):
+        rio_open = functools.partial(rasterio.open, self.path)
+        src = rio_open(*args, **kwargs)
+        return src
 
 
 @dataclass(order=False)
@@ -265,3 +244,58 @@ class LS8_Metadata:
             qa=LS8_QABand.from_meta(metadata),
         )
         return instance
+
+    def __iter__(self):
+        return self.bands
+
+    @property
+    def bands(self):
+        return iter(
+            (
+                self.b1,
+                self.b2,
+                self.b3,
+                self.b4,
+                self.b5,
+                self.b6,
+                self.b6,
+                # self.b8,
+                self.b9,
+                self.b10,
+                self.b11,
+            )
+        )
+
+    def all_bands(self):
+        itertools.chain(self.bands, iter(self.qa))
+
+    @property
+    def thermal_bands(self) -> typing.Iterator:
+        return iter((self.b10, self.b11))
+
+    @property
+    def reflective_bands(self) -> typing.Iterator:
+        return iter(
+            (
+                self.b1,
+                self.b2,
+                self.b3,
+                self.b4,
+                self.b5,
+                self.b6,
+                self.b6,
+                self.b8,
+                self.b9,
+            )
+        )
+
+    def save_array(
+        self, array: numpy.ndarray, path: typing.Union[pathlib.Path, str]
+    ) -> None:
+        path = pathlib.Path(path)
+        if path.exists():
+            raise ValueError(f"Path exists. Please provide a different one: {path}")
+        rio_meta = self.rio_meta
+        rio_meta.update({"dtype": array.dtype})
+        with rasterio.open(path, "w", **rio_meta) as dst:
+            dst.write_band(1, array)
