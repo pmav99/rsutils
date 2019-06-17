@@ -53,5 +53,5 @@ jobs:
 
       - script: |
           set -x
-          ~/.local/bin/poetry run pytest tests
+          ~/.local/bin/poetry run pytest tests --cov rsutils --cov-report html
         displayName: 'Run tests'
