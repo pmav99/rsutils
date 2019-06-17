@@ -3,7 +3,7 @@
 import logging
 import pathlib
 
-from ..utils import to_python
+from ..utils import to_python  # noqa
 
 
 logger = logging.getLogger(__name__)

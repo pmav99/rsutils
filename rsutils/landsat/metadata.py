@@ -106,9 +106,9 @@ class LS8_BandBase:
 @dataclass(order=False)
 class LS8_QABand(LS8_BandBase):
     @classmethod
-    def from_meta(
+    def from_meta(  # pylint: disable=arguments-differ
         cls, metadata: dict
-    ) -> "LS8_QABand":  # pylint: disable=arguments-differ
+    ) -> "LS8_QABand":
         band = cls(
             index=0,
             filename=metadata["file_name_band_quality"].name,
@@ -128,7 +128,7 @@ class LS8_Band(LS8_BandBase):
 
     @classmethod
     def from_meta(cls, metadata: dict, index: int) -> "LS8_Band":
-        if not index in {1, 2, 3, 4, 5, 6, 7, 9}:
+        if index not in {1, 2, 3, 4, 5, 6, 7, 9}:
             raise ValueError(f"Band index ∉ in [1, ..., 7, 9]: {index}")
         band = cls(
             index=index,
@@ -147,9 +147,9 @@ class LS8_Band(LS8_BandBase):
 @dataclass(order=False)
 class LS8_PanchromaticBand(LS8_Band):
     @classmethod
-    def from_meta(
+    def from_meta(  # pylint: disable=arguments-differ
         cls, metadata: dict
-    ) -> "LS8_PanchromaticBandBand":  # pylint: disable=arguments-differ
+    ) -> "LS8_PanchromaticBandBand":
         index = 8
         band = cls(
             index=index,
