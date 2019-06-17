@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/otinanai90/rsutils/_apis/build/status/pmav99.rsutils?branchName=master)](https://dev.azure.com/otinanai90/rsutils/_build/latest?definitionId=5&branchName=master)
+
 rsutils
 =======
 
