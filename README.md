@@ -1,4 +1,5 @@
-[![Build Status](https://dev.azure.com/otinanai90/rsutils/_apis/build/status/pmav99.rsutils?branchName=master)](https://dev.azure.com/otinanai90/rsutils/_build/latest?definitionId=5&branchName=master)
+![Azure Build status](https://img.shields.io/azure-devops/build/pmav99/rsutils/1.svg?style=plastic)
+![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/pmav99/rsutils/1.svg?style=plastic)
 
 rsutils
 =======
