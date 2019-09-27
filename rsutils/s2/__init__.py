@@ -1,16 +1,29 @@
 import dataclasses
+import functools
 import pathlib
 import typing
 
 import lxml
 import lxml.etree
 import natsort
+import numpy
+import rasterio
 
 
 @dataclasses.dataclass
 class S2BandData(object):
     path: pathlib.Path
 
+    def to_numpy(self) -> numpy.ndarray:
+        """ Open the jp2 and return a `numpy.ndarray` """
+        with self.to_dataset() as src:
+            array = src.read(1)
+        return array
+
+    def to_dataset(self, *args, **kwargs):
+        rio_open = functools.partial(rasterio.open, self.path)
+        src = rio_open(*args, **kwargs)
+        return src
 
 @dataclasses.dataclass
 class S2_R10(object):
