@@ -83,9 +83,10 @@ class S2Scene(object):
     @classmethod
     def from_manifest(cls, manifest: typing.Union[pathlib.Path, str]):
         manifest = pathlib.Path(manifest).expanduser().resolve()
+        root_dir = manifest.parent
         tree = lxml.etree.ElementTree(lxml.etree.XML(manifest.read_bytes()))
         datafiles = tree.xpath("//dataObjectSection[1]/dataObject[*]/byteStream[1]/fileLocation[1]/@href")
-        img_data = natsort.natsorted([manifest / path for path in datafiles if "IMG_DATA" in path])
+        img_data = natsort.natsorted([root_dir / path for path in datafiles if "IMG_DATA" in path])
         r10 = S2_R10(**{key: S2BandData(path) for key, path in zip(("aot", "b02", "b03", "b04", "b08", "tci", "wvp"), img_data[:7])})
         r20 = S2_R20(**{key: S2BandData(path) for key, path in zip(("aot", "b02", "b03", "b04", "b05", "b06", "b07", "b8a", "b11", "b12", "scl", "tci", "wvp"), img_data[7:20])})
         r60 = S2_R60(**{key: S2BandData(path) for key, path in zip(("aot", "b01", "b02", "b03", "b04", "b05", "b06", "b07", "b8a", "b11", "b12", "scl", "tci", "wvp"), img_data[21:])})
